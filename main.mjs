@@ -1,11 +1,11 @@
 import fs from "node:fs";
 
-const quantityRegExp = new RegExp(
+const measureRegExp = new RegExp(
   /\b\d+\s?(?:L|litro|litros|k|quilo|kg|g|grama|gramas|ml|mL)\b/gi
 );
 
 function normalizeMeasure(text) {
-  return text.replace(quantityRegExp, (_, qty, unit) => {
+  return text.replace(measureRegExp, (_, qty, unit) => {
     const normalized = {
       litro: "L",
       litros: "L",
@@ -33,7 +33,7 @@ const pipeline = async () => {
     let reply = [];
     for (let index = 0; index < data.length; index++) {
       const currentProduct = data[index];
-      const [measure] = quantityRegExp.exec(currentProduct.title);
+      const [measure] = measureRegExp.exec(currentProduct.title);
 
       const normalizedMeasure = normalizeMeasure(measure);
       const title = currentProduct.title
