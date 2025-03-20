@@ -23,12 +23,6 @@ function normalizeMeasure(text) {
     return `${qty}${normalized[unit.toLowerCase()] || unit}`;
   });
 }
-const jaccardSimilarity = (setA, setB) => {
-  const intersection = new Set([...setA].filter((x) => setB.has(x)));
-  const union = new Set([...setA, ...setB]);
-  return intersection.size / union.size;
-};
-
 const pipeline = async () => {
   const rs = fs.createReadStream("./data01.json");
   rs.on("data", (chunk) => {
