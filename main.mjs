@@ -3,6 +3,7 @@ import fs from "node:fs";
 const quantityRegExp = new RegExp(
   /\b\d+\s?(?:L|litro|litros|k|quilo|kg|g|grama|gramas|ml|mL)\b/gi
 );
+
 function normalizeMeasure(text) {
   return text.replace(quantityRegExp, (_, qty, unit) => {
     const normalized = {
@@ -23,6 +24,7 @@ function normalizeMeasure(text) {
     return `${qty}${normalized[unit.toLowerCase()] || unit}`;
   });
 }
+
 const pipeline = async () => {
   const rs = fs.createReadStream("./data01.json");
   rs.on("data", (chunk) => {
