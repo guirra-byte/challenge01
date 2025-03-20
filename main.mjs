@@ -23,6 +23,12 @@ function normalizeMeasure(text) {
     return `${qty}${normalized[unit.toLowerCase()] || unit}`;
   });
 }
+const jaccardSimilarity = (setA, setB) => {
+  const intersection = new Set([...setA].filter((x) => setB.has(x)));
+  const union = new Set([...setA, ...setB]);
+  return intersection.size / union.size;
+};
+
 const pipeline = async () => {
   const rs = fs.createReadStream("./data01.json");
   rs.on("data", (chunk) => {
@@ -42,10 +48,16 @@ const pipeline = async () => {
         if (index >= words.length) return accumulator;
 
         const word = words[index];
-        const filtered = accumulator.filter(
-          (product) =>
-            product.title.includes(word) && product.id !== currentProduct.id
-        );
+        const filtered = accumulator.filter((product) => {
+          const left = new Set(product.title.split(" "));
+          const right = new Set(words);
+
+          const intersection = new Set([...left].filter((x) => right.has(x)));
+
+          const union = new Set([...left, ...right]);
+          const similarity = intersection.size / union.size;
+          return product.title.includes(word) || similarity >= 0.5;
+        });
 
         return recursiveFilter(
           words,
@@ -55,7 +67,6 @@ const pipeline = async () => {
       };
 
       const matches = recursiveFilter(title, 0, data);
-      console.log(matches)
       const products = matches.map((match) => {
         return { title: match.title, supermarket: match.supermarket };
       });
